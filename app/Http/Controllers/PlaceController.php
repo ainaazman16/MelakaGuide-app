@@ -52,12 +52,12 @@ class PlaceController extends Controller
     // remove cover_image from fillable data
     unset($data['cover_image']);
 
-    // ✅ Save place first
+    //Save place first
     $place = new \App\Models\Place();
     $place->fill($data);
     $place->save();
 
-    // ✅ Now attach cover image
+    // Now attach cover image
     if ($request->hasFile('cover_image')) {
         $file = $request->file('cover_image');
         $path = $file->store('places/cover', 'public');
@@ -70,7 +70,7 @@ class PlaceController extends Controller
         ]);
     }
 
-    // ✅ Attach gallery files
+    // Attach gallery files
     if ($request->hasFile('attachments')) {
         foreach ($request->file('attachments') as $file) {
             $path = $file->store('places/gallery', 'public');
