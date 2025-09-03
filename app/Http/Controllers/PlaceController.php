@@ -37,77 +37,90 @@ class PlaceController extends Controller
     }
 
     public function store(Request $request)
-{
-    $data = $request->validate([
-        'name'        => 'required|string|max:255',
-        'category'    => 'nullable|string|max:100',
-        'address'     => 'nullable|string|max:255',
-        'phone'       => 'nullable|string|max:50',
-        'website'     => 'nullable|url|max:255',
-        'description' => 'nullable|string',
-        'cover_image' => 'nullable|image|max:4096',
-        'attachments.*' => 'nullable|file|max:8192',
-    ]);
-
-    // remove cover_image from fillable data
-    unset($data['cover_image']);
-
-    //Save place first
-    $place = new \App\Models\Place();
-    $place->fill($data);
-    $place->save();
-
-    // Now attach cover image
-    if ($request->hasFile('cover_image')) {
-        $file = $request->file('cover_image');
-        $path = $file->store('places/cover', 'public');
-
-        $place->assets()->create([
-            'filename' => $file->getClientOriginalName(),
-            'filepath' => $path,
-            'filetype' => $file->getClientMimeType(),
-            'category' => 'cover',
+    {
+        $data = $request->validate([
+            'name'        => 'required|string|max:255',
+            'category'    => 'nullable|string|max:100',
+            'address'     => 'nullable|string|max:255',
+            'phone'       => 'nullable|string|max:50',
+            'website'     => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'cover_image' => 'nullable|image|max:4096',
+            'attachments.*' => 'nullable|file|max:8192',
         ]);
-    }
 
-    // Attach gallery files
-    if ($request->hasFile('attachments')) {
-        foreach ($request->file('attachments') as $file) {
-            $path = $file->store('places/gallery', 'public');
+        // remove cover_image from fillable data
+        unset($data['cover_image']);
+
+        //Save place first
+        $place = new \App\Models\Place();
+        $place->fill($data);
+        $place->user_id = auth()->id();
+        $place->save();
+
+        // Now attach cover image
+        if ($request->hasFile('cover_image')) {
+            $file = $request->file('cover_image');
+            $path = $file->store('places/cover', 'public');
 
             $place->assets()->create([
                 'filename' => $file->getClientOriginalName(),
                 'filepath' => $path,
                 'filetype' => $file->getClientMimeType(),
-                'category' => 'gallery',
+                'category' => 'cover',
             ]);
         }
+
+        // Attach gallery files
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $path = $file->store('places/gallery', 'public');
+
+                $place->assets()->create([
+                    'filename' => $file->getClientOriginalName(),
+                    'filepath' => $path,
+                    'filetype' => $file->getClientMimeType(),
+                    'category' => 'gallery',
+                ]);
+            }
+        }
+
+        return redirect()
+            ->route('places.show', $place->id)
+            ->with('success', 'Place created successfully with files!');
     }
 
-    return redirect()
-        ->route('places.show', $place->id)
-        ->with('success', 'Place created successfully with files!');
-}
-
-   public function show(Place $place)
-{
-    $place->load(['assets']); // reviews not required yet
-    return view('places.show', compact('place'));
-}
+    public function show(Place $place)
+    {
+        $place->load(['assets']); // reviews not required yet
+        return view('places.show', compact('place'));
+    }
 
     public function edit(Place $place)
     {
-        return view('places.edit', compact('place'));
+           if ($place->user_id !== auth()->id()) {
+        return redirect()
+            ->route('places.index')
+            ->with('error', 'You are not allowed to edit this place.');
+    }
+
+    return view('places.edit', compact('place'));
     }
 
     public function update(Request $request, Place $place)
     {
+        if ($place->user_id !== auth()->id()) {
+                return redirect()
+                    ->route('places.index')
+                    ->with('error', 'You are not allowed to update this place.');
+            }
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'category' => 'nullable|string|max:100',
             'address' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:50',
-            'website' => 'nullable|url|max:255',
+            'website' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'cover_image' => 'nullable|image|max:4096',
         ]);
@@ -122,6 +135,11 @@ class PlaceController extends Controller
 
     public function destroy(Place $place)
     {
+        if ($place->user_id !== auth()->id()) {
+        return redirect()
+            ->route('places.index')
+            ->with('error', 'You are not allowed to delete this place.');
+    }
         $place->delete();
         return redirect()->route('places.index')->with('success', 'Place deleted.');
     }

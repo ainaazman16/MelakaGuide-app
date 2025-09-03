@@ -47,11 +47,26 @@
             <p class="card-text small text-muted">{{ $p->category ?? '—' }} • ⭐ {{ number_format($p->reviews_avg_rating ?? 0,1) }} ({{ $p->reviews_count }})</p>
             <p class="card-text">{{ \Illuminate\Support\Str::limit($p->description, 100) }}</p>
             <a href="{{ route('places.show', $p) }}" class="btn btn-primary btn-sm">View</a>
+            @auth
+            <td>
+          @if(Auth::id() === $p->user_id)
+                <a href="{{ route('places.edit', $p) }}" class="btn btn-secondary btn-sm">Edit</a>
+              
+                <form action="{{ route('places.destroy', $p->id) }}" method="POST" class>
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger btn-sm"
+                        onlick="return confirm('Are you sure you want to delete this place?')">
+                        Delete</button>
+                </form>
+                @endif
+            </td>
+              
+            @endauth
           </div>
         </div>
       </div>
     @endforeach
   </div>
-
   <div class="mt-3">{{ $places->links() }}</div>
 @stop
