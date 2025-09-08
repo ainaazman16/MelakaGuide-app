@@ -42,6 +42,9 @@
     @endguest
 
     @auth
+    <li class="nav-item">
+             <a href="{{ route('places.index') }}" class="nav-link">Home</a>
+        </li>
         @if(config('adminlte.usermenu_enabled'))
             @include('adminlte::partials.navbar.menu-item-dropdown-user-menu')
         @else

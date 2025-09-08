@@ -54,7 +54,6 @@
                 <p class="help-block">Optional. Upload a representative photo.</p>
                 <img id="cover-preview" src="#" alt="Preview" class="img-fluid mt-2" style="max-width:200px; display:none;">
             </div>
-
             <div class="d-flex justify-content-between">
                 <a href="{{ route('places.index') }}" class="btn btn-default">← Back</a>
                 <button type="submit" class="btn btn-success">Save Place</button>
