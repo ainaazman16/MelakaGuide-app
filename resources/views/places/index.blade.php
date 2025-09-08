@@ -40,7 +40,8 @@
       <div class="col-md-4 mb-3">
         <div class="card h-100">
           @if($p->cover_image)
-            <img src="{{ asset('storage/'.$p->cover_image) }}" class="card-img-top" alt="">
+            <img src="{{ $p->cover_image ? asset('storage/'.$p->cover_image) : asset('images/placeholder.png') }}"
+              class="card-img-top" alt="">
           @endif
           <div class="card-body">
             <h5 class="card-title">{{ $p->name }}</h5>
@@ -52,12 +53,13 @@
           @if(Auth::id() === $p->user_id)
                 <a href="{{ route('places.edit', $p) }}" class="btn btn-secondary btn-sm">Edit</a>
               
-                <form action="{{ route('places.destroy', $p->id) }}" method="POST" class>
+                <form action="{{ route('places.destroy', $p->id) }}" method="POST" class="d-inline">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger btn-sm"
-                        onlick="return confirm('Are you sure you want to delete this place?')">
-                        Delete</button>
+                        onclick="return confirm('Are you sure you want to delete this place?')">
+                        Delete
+                    </button>
                 </form>
                 @endif
             </td>
