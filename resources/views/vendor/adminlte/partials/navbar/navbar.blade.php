@@ -1,5 +1,8 @@
 @inject('layoutHelper', 'JeroenNoten\LaravelAdminLte\Helpers\LayoutHelper')
 
+<!--  USING LOCAL NAVBAR (vendor/jeroennoten/laravel-adminlte/resources/views/partials/navbar.blade.php) -->
+
+
 <nav class="main-header navbar
     {{ config('adminlte.classes_topnav_nav', 'navbar-expand') }}
     {{ config('adminlte.classes_topnav', 'navbar-white navbar-light') }}">

@@ -1,3 +1,5 @@
+@extends('adminlte::page')
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -18,10 +20,10 @@
 <div class="wrapper">
 
     {{-- Top Navbar --}}
-    @include('vendor.adminlte.partials.navbar.navbar')
+    {{-- @include('layouts.topnav') --}}
 
     {{-- Sidebar --}}
-    @include('vendor.adminlte.partials.sidebar.left-sidebar')
+    {{-- @include('layouts.sidebar') --}}
 
     {{-- Page Content Wrapper --}}
     <div class="content-wrapper">
